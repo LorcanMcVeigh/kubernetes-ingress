@@ -62,7 +62,7 @@ type TransportServer struct {
 // TransportServerSpec is the spec of the TransportServer resource.
 type TransportServerSpec struct {
 	Listener           TransportServerListener `json:"listener"`
-	Snippets           string                  `json:"snippets"`
+	ServerSnippets     string                  `json:"server-snippets"`
 	Host               string                  `json:"host"`
 	Upstreams          []Upstream              `json:"upstreams"`
 	UpstreamParameters *UpstreamParameters     `json:"upstreamParameters"`

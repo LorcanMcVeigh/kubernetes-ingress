@@ -557,9 +557,12 @@ func (cnf *Configurator) AddOrUpdateTransportServer(transportServerEx *Transport
 func (cnf *Configurator) addOrUpdateTransportServer(transportServerEx *TransportServerEx) error {
 	name := getFileNameForTransportServer(transportServerEx.TransportServer)
 
-	tsCfg, _ := generateTransportServerConfig(transportServerEx, transportServerEx.ListenerPort, cnf.isPlus, cnf.staticCfgParams.EnableSnippets)
+	tsCfg, err := generateTransportServerConfig(transportServerEx, transportServerEx.ListenerPort, cnf.isPlus, cnf.staticCfgParams.EnableSnippets)
+	if err != nil {
+		return fmt.Errorf("Error generating TransportServer config %v: %v", name, err)
+	}
 
-	content, err := cnf.templateExecutorV2.ExecuteTransportServerTemplate(&tsCfg)
+	content, err := cnf.templateExecutorV2.ExecuteTransportServerTemplate(tsCfg)
 	if err != nil {
 		return fmt.Errorf("Error generating TransportServer config %v: %v", name, err)
 	}

@@ -30,8 +30,7 @@ func (tsEx *TransportServerEx) String() string {
 }
 
 // generateTransportServerConfig generates a full configuration for a TransportServer.
-func generateTransportServerConfig(transportServerEx *TransportServerEx, listenerPort int, isPlus bool, snippetsEnabled bool) (version2.TransportServerConfig, Warnings) {
-	warn := newWarnings()
+func generateTransportServerConfig(transportServerEx *TransportServerEx, listenerPort int, isPlus bool, snippetsEnabled bool) (*version2.TransportServerConfig, error) {
 	upstreamNamer := newUpstreamNamerForTransportServer(transportServerEx.TransportServer)
 
 	upstreams := generateStreamUpstreams(transportServerEx, upstreamNamer, isPlus)
@@ -60,9 +59,9 @@ func generateTransportServerConfig(transportServerEx *TransportServerEx, listene
 		proxyTimeout = transportServerEx.TransportServer.Spec.SessionParameters.Timeout
 	}
 
-	serverSnippets := generateSnippets(snippetsEnabled, transportServerEx.TransportServer.Spec.Snippets, []string{})
-	if !snippetsEnabled && (transportServerEx.TransportServer.Spec.Snippets != "") {
-		warn.AddWarning(transportServerEx.TransportServer, "snippet specified but snippets feature is not enabled")
+	serverSnippets := generateSnippets(snippetsEnabled, transportServerEx.TransportServer.Spec.ServerSnippets, []string{})
+	if !snippetsEnabled && (transportServerEx.TransportServer.Spec.ServerSnippets != "") {
+		return nil, fmt.Errorf("snippet specified but snippets feature is not enabled")
 	}
 
 	statusZone := transportServerEx.TransportServer.Spec.Listener.Name
@@ -70,7 +69,7 @@ func generateTransportServerConfig(transportServerEx *TransportServerEx, listene
 		statusZone = transportServerEx.TransportServer.Spec.Host
 	}
 
-	tsConfig := version2.TransportServerConfig{
+	tsConfig := &version2.TransportServerConfig{
 		Server: version2.StreamServer{
 			TLSPassthrough:           transportServerEx.TransportServer.Spec.Listener.Name == conf_v1alpha1.TLSPassthroughListenerName,
 			UnixSocket:               generateUnixSocket(transportServerEx),
@@ -93,7 +92,7 @@ func generateTransportServerConfig(transportServerEx *TransportServerEx, listene
 		Upstreams: upstreams,
 	}
 
-	return tsConfig, warn
+	return tsConfig, nil
 }
 
 func generateUnixSocket(transportServerEx *TransportServerEx) string {
