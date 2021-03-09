@@ -50,7 +50,7 @@ spec:
                       type: string
                     protocol:
                       type: string
-                server-snippets:
+                serverSnippets:
                   type: string
                 sessionParameters:
                   description: SessionParameters defines session parameters.

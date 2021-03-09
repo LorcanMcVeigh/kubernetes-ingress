@@ -378,7 +378,7 @@ metadata:
   name: cafe
 spec:
   host: cafe.example.com
-  snippets: |
+  serverSnippets: |
     deny  192.168.1.1;
     allow 192.168.1.0/24;
   upstreams:
